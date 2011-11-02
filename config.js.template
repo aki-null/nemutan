@@ -1,0 +1,7 @@
+exports.serverPort = 6368;
+exports.enableLogging = true;
+
+// Database connection details
+exports.databaseAddress = "http://localhost";
+exports.databasePort = 5984;
+exports.databaseName = "nemutan";
