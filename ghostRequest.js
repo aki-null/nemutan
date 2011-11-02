@@ -92,7 +92,7 @@ exports.processRequest = function(urlComps, successFunc, failFunc) {
             } else if (pathNames.length == 4) {
                 // Forward the request to ghost
                 // TODO: Implement environment variables and response state
-                ghost.respond(pathNames[3], null, {}, successFunc, failFunc);
+                ghost.respond(pathNames[3], null, null, {}, successFunc, failFunc);
             } else {
                 // Invalid number of paths
                 failFunc("The request has too many path components");

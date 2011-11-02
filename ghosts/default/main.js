@@ -21,15 +21,17 @@
  */
 
 var responder = require("./responder.js");
+var desc = require("./description.js");
 
 // Respond to the user request
 // Parameters:
 // responder: Name of the responder function (It MUST respond to at leat "talk")
 // env: Environment (user info)
+// gEnv: Ghost environment (user info for this ghost)
 // state: Session state (can contain things like the discussion state)
 // successFunc: Must be called with the resulting structure if the request has succeeded
 // failFunc: Must be called with the error message string if the request has failed
-exports.respond = function(responderName, env, state, successFunc, failFunc) {
+exports.respond = function(responderName, env, gEnv, state, successFunc, failFunc) {
     if (responderName && responderName.length > 0) {
         var responderFunc = responder[responderName];
         if (!responderFunc) {
@@ -41,3 +43,6 @@ exports.respond = function(responderName, env, state, successFunc, failFunc) {
         failFunc("Responder function name needs to be specified");
     }
 }
+
+exports.name = desc.name;
+exports.introduction = desc.introduction;
