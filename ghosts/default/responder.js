@@ -30,5 +30,8 @@ var talkPrompts = [
 exports["talk"] = function(env, state, successFunc, failFunc) {
     successFunc({
         prompt: talkPrompts[Math.floor(Math.random() * talkPrompts.length)]
+    }, {
+        test: "test1",
+        test2: "test2"
     });
 }

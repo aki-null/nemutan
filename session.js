@@ -28,7 +28,7 @@ var logger = require("./logger.js");
 var db = new (cradle.Connection)(config.databaseAddress, config.databasePort, {
     cache: true,
     raw: false
-}).database(config.databaseName);
+}).database(config.sessionDatabaseName);
 
 db.exists(function(err, exists) {
     if (err) {
@@ -37,8 +37,24 @@ db.exists(function(err, exists) {
         // The database does not exist. Need to initialize tables.
         db.create();
     }
-})
+});
 
-exports.storeSession = function(state) {
-
+exports.storeSession = function(state, owner, ghost, successFunc, failFunc) {
+    if (state) {
+        var wrappedState = {
+            state: state,
+            owner: owner,
+            ghost: ghost
+        };
+        db.save(null, wrappedState, function(err, res) {
+            if (err) {
+                failFunc("Failed to write session data");
+                logger.logError(err.reason);
+            } else {
+                successFunc(res.id);
+            }
+        });
+    } else {
+        successFunc();
+    }
 }

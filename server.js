@@ -25,6 +25,7 @@ var url = require("url");
 var config = require("./config.js");
 var ghostReq = require("./ghostRequest.js");
 var logger = require("./logger.js");
+var session = require("./session.js");
 
 ghostReq.loadGhosts();
 
@@ -43,14 +44,16 @@ function processRequest(req, res) {
         }));
     }
 
-    var successFunc = function success(result, state) {
+    var successFunc = function success(result, state, from) {
         var resultStruct = {
             success: true,
             message: null,
             result: result
         };
-        // TODO: Record the state using the session module and add the session ID to the response if state is not null
-        res.end(JSON.stringify(resultStruct));
+        session.storeSession(state, "temp", from, function(sessionID) {
+            resultStruct.sessionID = sessionID;
+            res.end(JSON.stringify(resultStruct));
+        }, failFunc);
     }
 
     // Request forwarfing

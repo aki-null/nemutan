@@ -36,5 +36,5 @@ exports.logAccess = function(message) {
 }
 
 exports.logError = function(message) {
-    logger.error(message);
+    errorLogger.error(message);
 }
