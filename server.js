@@ -35,13 +35,14 @@ function processRequest(req, res) {
 
     var urlComps = url.parse(req.url, true);
     var pathName = urlComps.pathname;
+    var readable = urlComps.query.readable !== undefined ? "    " : false;
 
     var failFunc = function failed(message) {
         res.end(JSON.stringify({
             success: false,
             message: message,
             result: null
-        }));
+        }, null, readable));
     };
 
     var successFunc = function success(response, from) {
@@ -52,7 +53,7 @@ function processRequest(req, res) {
         };
         database.storeSession(responseFinal.state, "temp", from, function(sessionID) {
             resultStruct.result.sessionID = sessionID;
-            res.end(JSON.stringify(resultStruct));
+            res.end(JSON.stringify(resultStruct, null, readable));
         }, failFunc);
     }
 
