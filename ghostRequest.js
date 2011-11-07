@@ -92,11 +92,12 @@ exports.processRequest = function(urlComps, successFunc, failFunc) {
                 failFunc("Ghost info API has not been implemented yet");
             } else if (pathNames.length == 4) {
                 // Forward the request to ghost
-                // TODO: Implement environment variables and response state
+                // TODO: Implement environment variables
                 var sessionID = urlComps.query.session;
+                var response = urlComps.query.response;
                 var gState = null;
                 var gReqFunc = function(state) {
-                    ghost.respond(pathNames[3], null, null, state, function(response) {
+                    ghost.respond(pathNames[3], null, null, response, state, function(response) {
                         successFunc(response, ghostName.toLowerCase());
                     }, failFunc);
                 };

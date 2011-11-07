@@ -22,23 +22,63 @@
 
 var helper = require("../../ghostHelper.js");
 
-var talkPrompts = [
-    "兄さん、朝ですよ♪",
-    "おかえりなさい、兄さん♪",
-    "に、兄さん…?",
-    "お仕事お疲れ様、兄さん♪"
-]
-
-exports["talk"] = function(env, state, successFunc, failFunc) {
+exports["talk"] = function(env, response, state, successFunc, failFunc) {
     var resp = helper.getResponseGenerator();
-    var newPrompt = talkPrompts[Math.floor(Math.random() * talkPrompts.length)]
-    if (state.lastPrompt) {
-        resp.addPrompt(state.lastPrompt);
+    resp.addPrompt("兄さん、お帰りなさい♪ ご飯にする、お風呂にする? それとも、あ・た・し?");
+    resp.setMultipleChoice({
+        meal: "ご飯",
+        bath: "お風呂",
+        nemutan: "ねむたん"
+    });
+    resp.nextCall = "talk-1";
+    successFunc(resp);
+}
+
+exports["talk-1"] = function(env, response, state, successFunc, failFunc) {
+    var resp = helper.getResponseGenerator();
+    if (!response) {
+        response = state.response;
     }
-    resp.addPrompt(newPrompt);
-    resp.setTextAnswer();
-    resp.state = {
-        lastPrompt: newPrompt
-    };
+    switch (response) {
+        case "meal":
+            resp.addPrompt("今晩は張り切って作ったの! はい、どーぞ♥ (ピンク触手)");
+            resp.setMultipleChoice({
+                eat: "お、旨そうじゃん。食感がたまらない!",
+                escape: "あっ、やっぱり風呂浴びるわ。",
+                escape2: "やっぱりねむたんを食べたい・・・。"
+            });
+            resp.nextCall = "talk-2";
+            break;
+        case "bath":
+            resp.addPrompt("じゃあ一緒に入ろう♪ お風呂の用意はもう出来てるよ♥");
+            break;
+        case "nemutan":
+            resp.addPrompt("やだ、兄さんったら、積極的…♥");
+            break;
+        default:
+            resp.addPrompt("兄さん、何言ってるの?");
+            break;
+    }
+    successFunc(resp);
+}
+
+exports["talk-2"] = function(env, response, state, successFunc, failFunc) {
+    var resp = helper.getResponseGenerator();
+    switch (response) {
+        case "eat":
+            resp.addPrompt("兄さんの為に沢山作ったよ♪ まだまだあるから遠慮しないでね♥");
+            break;
+        case "escape":
+        case "escape2":
+            resp.addPrompt("兄さん、どこへ逃げる気……?");
+            resp.state = {
+                response: "meal"
+            };
+            resp.nextCall = "talk-1";
+            break;
+        default:
+            resp.addPrompt("兄さん、何言ってるの?");
+            break;
+    }
     successFunc(resp);
 }

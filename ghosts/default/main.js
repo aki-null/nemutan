@@ -31,13 +31,13 @@ var desc = require("./description.js");
 // state: Session state (can contain things like the discussion state)
 // successFunc: Must be called with the resulting structure if the request has succeeded
 // failFunc: Must be called with the error message string if the request has failed
-exports.respond = function(responderName, env, gEnv, state, successFunc, failFunc) {
+exports.respond = function(responderName, env, gEnv, response, state, successFunc, failFunc) {
     if (responderName && responderName.length > 0) {
         var responderFunc = responder[responderName];
         if (!responderFunc) {
             failFunc("The specified responder function (" + responderName + ") is undefined");
         } else {
-            responderFunc(env, state, successFunc, failFunc);
+            responderFunc(env, response, state, successFunc, failFunc);
         }
     } else {
         failFunc("Responder function name needs to be specified");
