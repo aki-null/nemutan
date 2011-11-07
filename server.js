@@ -25,7 +25,7 @@ var url = require("url");
 var config = require("./config.js");
 var ghostReq = require("./ghostRequest.js");
 var logger = require("./logger.js");
-var session = require("./session.js");
+var database = require("./database.js");
 
 ghostReq.loadGhosts();
 
@@ -50,7 +50,7 @@ function processRequest(req, res) {
             message: null,
             result: result
         };
-        session.storeSession(state, "temp", from, function(sessionID) {
+        database.storeSession(state, "temp", from, function(sessionID) {
             resultStruct.sessionID = sessionID;
             res.end(JSON.stringify(resultStruct));
         }, failFunc);

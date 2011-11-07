@@ -32,16 +32,27 @@ var db = new (cradle.Connection)(config.databaseAddress, config.databasePort, {
 
 db.exists(function(err, exists) {
     if (err) {
-        logger.logError("Failed to check the session database existance. Please check the database connection.");
+        logger.logError("Failed to check the database existance. Please check the database connection.");
     } else if (!exists) {
         // The database does not exist. Need to initialize tables.
-        db.create();
-    }
+        db.create(function() {
+            db.save("_design/sessions", {
+                all: {
+                    map: function(doc) {
+                        if (doc.type == "session") {
+                            emit(doc._id, doc);
+                        }
+                    }
+                }
+            });
+        });
+   }
 });
 
 exports.storeSession = function(state, owner, ghost, successFunc, failFunc) {
-    if (state) {
+    if (state && owner && ghost && successFunc && failFunc) {
         var wrappedState = {
+            type: "session",
             state: state,
             owner: owner,
             ghost: ghost
@@ -58,3 +69,25 @@ exports.storeSession = function(state, owner, ghost, successFunc, failFunc) {
         successFunc();
     }
 }
+
+exports.getSession = function(owner, ghost, sessionID, successFunc, failFunc) {
+    if (owner && ghost && successFunc && failFunc) {
+        db.view("sessions/all", { key: sessionID }, function(err, res) {
+            if (err) {
+                failFunc("Database error occured: " + err);
+            } else if (res.length >= 1) {
+                var sessionDetail = res[0].value;
+                if (sessionDetail.owner === owner && sessionDetail.ghost === ghost && sessionDetail.state) {
+                    successFunc(sessionDetail.state);
+                } else {
+                    failFunc("Invalid session ID for the specified ghost and user");
+                }
+            } else {
+                failFunc("The specified session does not exist");
+            }
+        })
+    } else {
+        failFunc("Invalid argument specified for session restoration");
+    }
+}
+

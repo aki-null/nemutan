@@ -22,6 +22,7 @@
 
 var fs = require("fs");
 var logger = require("./logger.js");
+var database = require("./database.js");
 
 var GHOST_DIR = "./ghosts/";
 
@@ -92,9 +93,18 @@ exports.processRequest = function(urlComps, successFunc, failFunc) {
             } else if (pathNames.length == 4) {
                 // Forward the request to ghost
                 // TODO: Implement environment variables and response state
-                ghost.respond(pathNames[3], null, null, {}, function(result, state) {
-                    successFunc(result, state, ghostName.toLowerCase());
-                }, failFunc);
+                var sessionID = urlComps.query.session;
+                var gState = null;
+                var gReqFunc = function(state) {
+                    ghost.respond(pathNames[3], null, null, state, function(result, state) {
+                        successFunc(result, state, ghostName.toLowerCase());
+                    }, failFunc);
+                };
+                if (sessionID && sessionID.length > 0) {
+                    database.getSession("temp", ghostName, sessionID, gReqFunc, failFunc);
+                } else {
+                    gReqFunc({});
+                }
             } else {
                 // Invalid number of paths
                 failFunc("The request has too many path components");

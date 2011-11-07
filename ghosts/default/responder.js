@@ -28,10 +28,11 @@ var talkPrompts = [
 ]
 
 exports["talk"] = function(env, state, successFunc, failFunc) {
+    var newPrompt = talkPrompts[Math.floor(Math.random() * talkPrompts.length)]
     successFunc({
-        prompt: talkPrompts[Math.floor(Math.random() * talkPrompts.length)]
+        prompt: newPrompt,
+        lastPrompt: state.lastPrompt
     }, {
-        test: "test1",
-        test2: "test2"
+        lastPrompt: newPrompt,
     });
 }
