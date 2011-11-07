@@ -21,6 +21,14 @@
  */
 
 var responseGenerator = {
+    init: function() {
+        this.nextCall = "";
+        this.state = null;
+        this.answerType = "none";
+        this.answerStruct = {};
+        this.prompts = [];
+        return this;
+    },
     compile: function() {
         return {
             values: {
@@ -63,11 +71,5 @@ var responseGenerator = {
 };
 
 exports.getResponseGenerator = function(initVals) {
-    var newGen = Object.create(responseGenerator);
-    newGen.nextCall = "";
-    newGen.state = null;
-    newGen.answerType = "none";
-    newGen.answerStruct = {};
-    newGen.prompts = [];
-    return newGen;
+    return Object.create(responseGenerator).init();
 };
