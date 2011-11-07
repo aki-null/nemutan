@@ -20,6 +20,8 @@
  * THE SOFTWARE.
  */
 
+var helper = require("../../ghostHelper.js");
+
 var talkPrompts = [
     "兄さん、朝ですよ♪",
     "おかえりなさい、兄さん♪",
@@ -28,11 +30,15 @@ var talkPrompts = [
 ]
 
 exports["talk"] = function(env, state, successFunc, failFunc) {
+    var resp = helper.getResponseGenerator();
     var newPrompt = talkPrompts[Math.floor(Math.random() * talkPrompts.length)]
-    successFunc({
-        prompt: newPrompt,
-        lastPrompt: state.lastPrompt
-    }, {
-        lastPrompt: newPrompt,
-    });
+    if (state.lastPrompt) {
+        resp.addPrompt(state.lastPrompt);
+    }
+    resp.addPrompt(newPrompt);
+    resp.setTextAnswer();
+    resp.state = {
+        lastPrompt: newPrompt
+    };
+    successFunc(resp);
 }

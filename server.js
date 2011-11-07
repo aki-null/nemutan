@@ -42,16 +42,16 @@ function processRequest(req, res) {
             message: message,
             result: null
         }));
-    }
+    };
 
-    var successFunc = function success(result, state, from) {
+    var successFunc = function success(response, from) {
+        var responseFinal = response.compile();
         var resultStruct = {
             success: true,
-            message: null,
-            result: result
+            result: responseFinal.values
         };
-        database.storeSession(state, "temp", from, function(sessionID) {
-            resultStruct.sessionID = sessionID;
+        database.storeSession(responseFinal.state, "temp", from, function(sessionID) {
+            resultStruct.result.sessionID = sessionID;
             res.end(JSON.stringify(resultStruct));
         }, failFunc);
     }

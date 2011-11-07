@@ -96,8 +96,8 @@ exports.processRequest = function(urlComps, successFunc, failFunc) {
                 var sessionID = urlComps.query.session;
                 var gState = null;
                 var gReqFunc = function(state) {
-                    ghost.respond(pathNames[3], null, null, state, function(result, state) {
-                        successFunc(result, state, ghostName.toLowerCase());
+                    ghost.respond(pathNames[3], null, null, state, function(response) {
+                        successFunc(response, ghostName.toLowerCase());
                     }, failFunc);
                 };
                 if (sessionID && sessionID.length > 0) {
